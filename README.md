@@ -2,12 +2,12 @@
 
 [![npm version](https://img.shields.io/npm/v/@wppconnect/curve25519.svg?color=green)](https://www.npmjs.com/package/@wppconnect/curve25519)
 [![Downloads](https://img.shields.io/npm/dm/@wppconnect/curve25519.svg)](https://www.npmjs.com/package/@wppconnect/curve25519)
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/wppconnect-team/wa-proto.svg)](https://isitmaintained.com/project/wppconnect/wa-proto 'Average time to resolve an issue')
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/wppconnect-team/wa-proto.svg)](https://isitmaintained.com/project/wppconnect/wa-proto 'Percentage of issues still open')
-[![Build Status](https://img.shields.io/github/actions/workflow/status/wppconnect-team/wa-proto/update-proto.yml?branch=main)](https://github.com/wppconnect/wa-proto/actions)
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/wppconnect-team/curve25519.svg)](https://isitmaintained.com/project/wppconnect/curve25519 'Average time to resolve an issue')
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/wppconnect-team/curve25519.svg)](https://isitmaintained.com/project/wppconnect/curve25519 'Percentage of issues still open')
+[![Build Status](https://img.shields.io/github/actions/workflow/status/wppconnect-team/curve25519/update-proto.yml?branch=main)](https://github.com/wppconnect/curve25519/actions)
 [![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
 
-> **WPPConnect/WA-Proto** This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
+> **WPPConnect/Curve25519** This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
 and exposes the basic functions in an easy-to-use TypeScript package.
 
 > **This project is a fork of [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).**
