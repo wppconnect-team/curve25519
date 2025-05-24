@@ -24,12 +24,12 @@ function hexToUint8Array(str: string): Uint8Array {
 }
 
 test(`generate key pair`, async () => {
-    const alicePair = Curve.keyPair(alice_bytes)
+    const alicePair = Curve.generateKeyPair(alice_bytes)
 
     expect(Buffer.from(alicePair.pubKey).toString('hex')).toBe(alice_pub_raw)
     expect(Buffer.from(alicePair.privKey).toString('hex')).toBe(alice_priv)
 
-    const bobPair = Curve.keyPair(bob_bytes)
+    const bobPair = Curve.generateKeyPair(bob_bytes)
 
     expect(Buffer.from(bobPair.pubKey).toString('hex')).toBe(bob_pub_raw)
     expect(Buffer.from(bobPair.privKey).toString('hex')).toBe(bob_priv)

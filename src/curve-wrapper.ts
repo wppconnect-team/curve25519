@@ -36,7 +36,7 @@ function _readBytes(address: number, length: number, array: Uint8Array) {
 /**
  * Generate a key pair from a private key
  */
-export function keyPair(privKey: Uint8Array): KeyPair {
+export function generateKeyPair(privKey: Uint8Array): KeyPair {
     const priv = new Uint8Array(privKey)
     priv[0] &= 248
     priv[31] &= 127
