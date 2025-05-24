@@ -12,7 +12,7 @@ emcc native/ed25519/additions/*.c \
      -s WASM_ASYNC_COMPILATION=0 \
      -s MODULARIZE=1 \
      -s ENVIRONMENT=node \
-     -s SINGLE_FILE=0 \
+     -s SINGLE_FILE=1 \
      -s NO_EXIT_RUNTIME=1 \
      -s NO_FILESYSTEM=1 \
      -s USE_CLOSURE_COMPILER=1 \
