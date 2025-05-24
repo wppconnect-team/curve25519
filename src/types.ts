@@ -7,13 +7,13 @@
  *
  */
 export interface KeyPair {
-    pubKey: ArrayBuffer
-    privKey: ArrayBuffer
+    pubKey: Uint8Array
+    privKey: Uint8Array
 }
 
 export interface Curve {
-    keyPair(privKey: ArrayBuffer): KeyPair
-    sharedSecret(pubKey: ArrayBuffer, privKey: ArrayBuffer): ArrayBuffer
-    sign(privKey: ArrayBuffer, message: ArrayBuffer): ArrayBuffer
-    verify(pubKey: ArrayBuffer, message: ArrayBuffer, sig: ArrayBuffer): boolean
+    keyPair(privKey: Uint8Array): KeyPair
+    sharedSecret(pubKey: Uint8Array, privKey: Uint8Array): Uint8Array
+    sign(privKey: Uint8Array, message: Uint8Array): Uint8Array
+    verify(pubKey: Uint8Array, message: Uint8Array, sig: Uint8Array): boolean
 }

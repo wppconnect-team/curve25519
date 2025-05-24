@@ -39,7 +39,7 @@ export class Curve25519Wrapper implements Curve {
         array.set(this._module.HEAPU8.subarray(address, address + length))
     }
 
-    keyPair(privKey: ArrayBuffer): KeyPair {
+    keyPair(privKey: Uint8Array): KeyPair {
         const priv = new Uint8Array(privKey)
         priv[0] &= 248
         priv[31] &= 127
@@ -67,10 +67,10 @@ export class Curve25519Wrapper implements Curve {
         this._module._free(privateKey_ptr)
         this._module._free(basepoint_ptr)
 
-        return { pubKey: res.buffer, privKey: priv.buffer }
+        return { pubKey: res, privKey: priv }
     }
 
-    sharedSecret(pubKey: ArrayBuffer, privKey: ArrayBuffer): ArrayBuffer {
+    sharedSecret(pubKey: Uint8Array, privKey: Uint8Array): Uint8Array {
         // Where to store the result
         const sharedKey_ptr = this._module._malloc(32)
 
@@ -94,10 +94,10 @@ export class Curve25519Wrapper implements Curve {
         this._module._free(privateKey_ptr)
         this._module._free(basepoint_ptr)
 
-        return res.buffer
+        return res
     }
 
-    sign(privKey: ArrayBuffer, message: ArrayBuffer): ArrayBuffer {
+    sign(privKey: Uint8Array, message: Uint8Array): Uint8Array {
         // Where to store the result
         const signature_ptr = this._module._malloc(64)
 
@@ -116,10 +116,10 @@ export class Curve25519Wrapper implements Curve {
         this._module._free(privateKey_ptr)
         this._module._free(message_ptr)
 
-        return res.buffer
+        return res
     }
 
-    verify(pubKey: ArrayBuffer, message: ArrayBuffer, sig: ArrayBuffer): boolean {
+    verify(pubKey: Uint8Array, message: Uint8Array, sig: Uint8Array): boolean {
         // Get a pointer to their public key
         const publicKey_ptr = this._allocate(new Uint8Array(pubKey))
 
@@ -146,7 +146,7 @@ export class Curve25519Wrapper implements Curve {
      * @param message
      * @param sig
      */
-    signatureIsValid(pubKey: ArrayBuffer, message: ArrayBuffer, sig: ArrayBuffer): boolean {
+    signatureIsValid(pubKey: Uint8Array, message: Uint8Array, sig: Uint8Array): boolean {
         return !this.verify(pubKey, message, sig)
     }
 }
