@@ -27,7 +27,7 @@ function hexToArrayBuffer(str: string): ArrayBuffer {
 }
 
 test(`generate key pair`, async () => {
-    const curve = await Curve25519Wrapper.create()
+    const curve = new Curve25519Wrapper()
     const alicePair = curve.keyPair(alice_bytes)
 
     expect(Buffer.from(alicePair.pubKey).toString('hex')).toBe(alice_pub_raw)
@@ -52,14 +52,14 @@ const sig = hexToArrayBuffer(
     '2bc06c745acb8bae10fbc607ee306084d0c28e2b3bb819133392473431291fd0dfa9c7f11479996cf520730d2901267387e08d85bbf2af941590e3035a545285'
 )
 test('Ed25519Sign', async () => {
-    const curve = await Curve25519Wrapper.create()
+    const curve = new Curve25519Wrapper()
     // Some self-generated test vectors
     const sigCalc = curve.sign(priv, msg)
     expect(Buffer.from(sigCalc).toString('hex')).toBe(Buffer.from(sig).toString('hex'))
 })
 
 test('Ed25519Verify rejects bad signature', async () => {
-    const curve = await Curve25519Wrapper.create()
+    const curve = new Curve25519Wrapper()
     const badsig = sig.slice(1)
     new Uint8Array(badsig).set([0], 0)
 
@@ -67,7 +67,7 @@ test('Ed25519Verify rejects bad signature', async () => {
 })
 
 test('Ed25519Verify accepts good signature', async () => {
-    const curve = await Curve25519Wrapper.create()
+    const curve = new Curve25519Wrapper()
     const verified = curve.verify(pub.slice(1), msg, sig)
     expect(verified).toBe(false)
 })

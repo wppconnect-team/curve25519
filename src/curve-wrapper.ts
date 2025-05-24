@@ -9,37 +9,33 @@
 
 /// <reference types="emscripten" />
 import factory from './built/curveasm'
-import { KeyPair, Curve, AsyncCurve } from './types'
+import { KeyPair, Curve } from './types'
 
 interface CurveModule extends EmscriptenModule {
     _curve25519_donna(mypublic_ptr: number, secret_ptr: number, basepoint_ptr: number): number
     _curve25519_sign(signature_ptr: number, privateKey_ptr: number, message_ptr: number, message_len: number): number
     _curve25519_verify(signature_ptr: number, privateKey_ptr: number, message_ptr: number, message_len: number): number
 }
-const instancePromise = factory()
+
+const instance = factory() as CurveModule
 
 export class Curve25519Wrapper implements Curve {
-    static async create(): Promise<Curve25519Wrapper> {
-        const instance = await instancePromise
-        return new Curve25519Wrapper(instance)
-    }
-
     private _module: CurveModule
     basepoint: Uint8Array
-    constructor(module: CurveModule) {
-        this._module = module
+    constructor(module?: CurveModule) {
+        this._module = module || instance
         this.basepoint = new Uint8Array(32).fill(0)
         this.basepoint[0] = 9
     }
 
-    private _allocate(bytes) {
+    private _allocate(bytes: Uint8Array) {
         const address = this._module._malloc(bytes.length)
         this._module.HEAPU8.set(bytes, address)
 
         return address
     }
 
-    private _readBytes(address, length, array) {
+    private _readBytes(address: number, length: number, array: Uint8Array) {
         array.set(this._module.HEAPU8.subarray(address, address + length))
     }
 
@@ -152,26 +148,5 @@ export class Curve25519Wrapper implements Curve {
      */
     signatureIsValid(pubKey: ArrayBuffer, message: ArrayBuffer, sig: ArrayBuffer): boolean {
         return !this.verify(pubKey, message, sig)
-    }
-}
-
-export class AsyncCurve25519Wrapper implements AsyncCurve {
-    curvePromise: Promise<Curve25519Wrapper>
-    constructor() {
-        this.curvePromise = Curve25519Wrapper.create()
-    }
-
-    async keyPair(privKey: ArrayBuffer): Promise<KeyPair> {
-        return (await this.curvePromise).keyPair(privKey)
-    }
-
-    async sharedSecret(pubKey: ArrayBuffer, privKey: ArrayBuffer): Promise<ArrayBuffer> {
-        return (await this.curvePromise).sharedSecret(pubKey, privKey)
-    }
-    async sign(privKey: ArrayBuffer, message: ArrayBuffer): Promise<ArrayBuffer> {
-        return (await this.curvePromise).sign(privKey, message)
-    }
-    async verify(pubKey: ArrayBuffer, message: ArrayBuffer, sig: ArrayBuffer): Promise<boolean> {
-        return (await this.curvePromise).verify(pubKey, message, sig)
     }
 }
