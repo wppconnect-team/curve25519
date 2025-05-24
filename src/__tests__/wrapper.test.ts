@@ -7,7 +7,7 @@
  *
  */
 
-import { Curve25519Wrapper } from '../curve-wrapper'
+import * as Curve from '../curve-wrapper'
 
 const alice_bytes = hexToUint8Array('77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a')
 const alice_priv = '70076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c6a'
@@ -24,19 +24,18 @@ function hexToUint8Array(str: string): Uint8Array {
 }
 
 test(`generate key pair`, async () => {
-    const curve = new Curve25519Wrapper()
-    const alicePair = curve.keyPair(alice_bytes)
+    const alicePair = Curve.keyPair(alice_bytes)
 
     expect(Buffer.from(alicePair.pubKey).toString('hex')).toBe(alice_pub_raw)
     expect(Buffer.from(alicePair.privKey).toString('hex')).toBe(alice_priv)
 
-    const bobPair = curve.keyPair(bob_bytes)
+    const bobPair = Curve.keyPair(bob_bytes)
 
     expect(Buffer.from(bobPair.pubKey).toString('hex')).toBe(bob_pub_raw)
     expect(Buffer.from(bobPair.privKey).toString('hex')).toBe(bob_priv)
 
-    const aliceSecret = curve.sharedSecret(bobPair.pubKey, alicePair.privKey)
-    const bobSecret = curve.sharedSecret(alicePair.pubKey, bobPair.privKey)
+    const aliceSecret = Curve.sharedSecret(bobPair.pubKey, alicePair.privKey)
+    const bobSecret = Curve.sharedSecret(alicePair.pubKey, bobPair.privKey)
 
     expect(Buffer.from(aliceSecret).toString('hex')).toBe(shared_sec)
     expect(Buffer.from(bobSecret).toString('hex')).toBe(shared_sec)
@@ -49,22 +48,19 @@ const sig = hexToUint8Array(
     '2bc06c745acb8bae10fbc607ee306084d0c28e2b3bb819133392473431291fd0dfa9c7f11479996cf520730d2901267387e08d85bbf2af941590e3035a545285'
 )
 test('Ed25519Sign', async () => {
-    const curve = new Curve25519Wrapper()
     // Some self-generated test vectors
-    const sigCalc = curve.sign(priv, msg)
+    const sigCalc = Curve.sign(priv, msg)
     expect(Buffer.from(sigCalc).toString('hex')).toBe(Buffer.from(sig).toString('hex'))
 })
 
 test('Ed25519Verify rejects bad signature', async () => {
-    const curve = new Curve25519Wrapper()
     const badsig = sig.slice(1)
     new Uint8Array(badsig).set([0], 0)
 
-    expect(curve.verify(pub, msg, badsig)).toBe(true)
+    expect(Curve.verify(pub, msg, badsig)).toBe(true)
 })
 
 test('Ed25519Verify accepts good signature', async () => {
-    const curve = new Curve25519Wrapper()
-    const verified = curve.verify(pub.slice(1), msg, sig)
+    const verified = Curve.verify(pub.slice(1), msg, sig)
     expect(verified).toBe(false)
 })
