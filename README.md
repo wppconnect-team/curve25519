@@ -1,101 +1,81 @@
-# Typescript Library for Curve 25519
+# WPPConnect/Curve25519
 
-This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
-and exposes the basic functions in an easy to use TypeScript package.
+[![npm version](https://img.shields.io/npm/v/@wppconnect/curve25519.svg?color=green)](https://www.npmjs.com/package/@wppconnect/curve25519)
+[![Downloads](https://img.shields.io/npm/dm/@wppconnect/curve25519.svg)](https://www.npmjs.com/package/@wppconnect/curve25519)
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/wppconnect-team/wa-proto.svg)](https://isitmaintained.com/project/wppconnect/wa-proto 'Average time to resolve an issue')
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/wppconnect-team/wa-proto.svg)](https://isitmaintained.com/project/wppconnect/wa-proto 'Percentage of issues still open')
+[![Build Status](https://img.shields.io/github/actions/workflow/status/wppconnect-team/wa-proto/update-proto.yml?branch=main)](https://github.com/wppconnect/wa-proto/actions)
+[![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
+
+> **WPPConnect/WA-Proto** This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
+and exposes the basic functions in an easy-to-use TypeScript package.
+
+> **This project is a fork of [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).**
+> Modifications were made to expose the API only as functions (no classes) and to make usage easier in modern TypeScript projects.
 
 ## Installation
 
-Use [yarn](https://yarnpkg.com/) to install:
+Use [yarn](https://yarnpkg.com/) or npm to install:
 
+```sh
+yarn add @wppconnect/curve25519
+# or
+npm install @wppconnect/curve25519
 ```
-yarn add @privacyresearch/curve25519-typescript
-```
-
-Then in your code simply import the class you want:
-
-```typescript
-import { Curve25519Wrapper } from '@privacyresearch/curve25519-typescript'
-// OR...
-import { AsyncCurve25519Wrapper } from '@privacyresearch/curve25519-typescript'
-```
-
-We'll say more about the differences between the two curve wrappers below.
 
 ## Usage
 
-Before getting into the details, here's a quick example of a Diffie-Hellman key exchange (not that you would ever do both key computations in one place!):
+The API is now function-based. Example usage for Diffie-Hellman:
 
 ```typescript
-const curve = await Curve25519Wrapper.create()
+import { generateKeyPair, sharedSecret, sign, verify, signatureIsValid } from '@wppconnect/curve25519'
 
-const alicePair = curve.keyPair(alice_bytes)
-const bobPair = curve.keyPair(bob_bytes)
+const alicePair = generateKeyPair(alice_bytes)
+const bobPair = generateKeyPair(bob_bytes)
 
-const aliceSecret = curve.sharedSecret(bobPair.pubKey, alicePair.privKey)
-const bobSecret = curve.sharedSecret(alicePair.pubKey, bobPair.privKey)
+const aliceSecret = sharedSecret(bobPair.pubKey, alicePair.privKey)
+const bobSecret = sharedSecret(alicePair.pubKey, bobPair.privKey)
 ```
 
-Note the `await`! The curve wrapper is created asynchronously.
-
-We can sign and verify too:
+Signing and verifying:
 
 ```typescript
-// pub, priv, msg are all ArrayBuffers
-const curve = await Curve25519Wrapper.create()
-const sig = curve.sign(priv, msg)
-const verified = curve.verify(pub, msg, sig)
+// pub, priv, msg are Uint8Array
+import { sign, verify, signatureIsValid } from '@wppconnect/curve25519'
+
+const sig = sign(priv, msg)
+const verified = verify(pub, msg, sig)
 if (verified) {
   // Yes, this is correct.  `verify` returns `true` for invalid signatures
   throw new Error('INVALID SIGNATURE!')
 }
-```
 
-Note the return value of `verify`! This is for compatibility with usage in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript).
-To avoid confusion, we offer an alternative:
-
-```typescript
-const signatureIsValid = curve.signatureIsValid(pub, msg, sig)
-if (!signatureIsValid) {
+// To avoid confusion, use:
+const isValid = signatureIsValid(pub, msg, sig)
+if (!isValid) {
   throw new Error('INVALID SIGNATURE!')
 }
 ```
 
-That pretty much covers it, but look at the [tests](https://github.com/privacyresearchgroup/curve25519-typescript/tree/master/src/__tests__) for details about
-creating ArrayBuffers for input and getting some sample data to get started.
+See the [tests](src/__tests__) for details on how to create input Uint8Arrays and for sample data.
 
-### Async or not Async?
+## About this fork
 
-In the installation instructions we noted that the package exports two classes: `Curve25519Wrapper` and `AsyncCurve25519Wrapper`. The examples above
-all use `Curve25519Wrapper`. Here are the differences between the two:
+- **Function-based API:** There are no more classes, only named functions for all operations (generateKeyPair, sharedSecret, sign, verify, signatureIsValid).
+- **Compatibility:** Usage is simpler and more direct for modern TypeScript projects.
 
-#### Wrapper creation
+## Build
 
-As seen in the examples above `Curve25519Wrapper` must be created asynchronously, but all of its methods are synchronous.
+The main curve implementation is written in C and can be found in the [native/](native/) directory. It is compiled to Javascript with [Emscripten](https://emscripten.org/), as shown in the [compile.sh](compile.sh) script.
 
-On the other hand `AsyncCurve25519Wrapper` can be instantiated synchronously, but all of its methods are `async`. For example, here his how
-message signing looks with this wrapper:
+If you want to modify the C code or the compilation arguments, you will need to install Emscripten.
 
-```typescript
-// Just create the wrapper, no need to await it
-const curve = new AsyncCurve25519Wrapper()
+## Acknowledgements
 
-// but now curve.sign returns a Promise<ArrayBuffer>!
-const sigCalc = await curve.sign(priv, msg)
-```
-
-## Building
-
-The core curve implementation is written in C and can be found in the [native/](https://github.com/privacyresearchgroup/curve25519-typescript/tree/master/native) directory. It is compiled
-to Javascript with [Emscripten](https://emscripten.org/) and the compilation command can be seen in [compile.sh](https://github.com/privacyresearchgroup/curve25519-typescript/blob/master/compile.sh).
-
-If you want to make modifications to the C code or change compilation arguments (e.g. to optimize more aggressively), you will need to install Emscripten.
-
-## Thanks!
-
-This is really just a direct lift of work done by the folks at [Signal](https://signal.org) so that we can use it easily in our TypeScript projects. Thanks to them for putting the core of this together!
+This project is based on the work of the folks at [Signal](https://signal.org) and the original repository [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).
 
 ## License
 
 Copyright 2020 Privacy Research, LLC
 
-Licensed under the GPLv3: [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)
+Licensed under GPLv3: [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)
