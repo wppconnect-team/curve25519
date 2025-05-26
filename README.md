@@ -8,7 +8,7 @@
 [![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
 
 > **WPPConnect/Curve25519** This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
-and exposes the basic functions in an easy-to-use TypeScript package.
+> and exposes the basic functions in an easy-to-use TypeScript package.
 
 > **This project is a fork of [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).**
 > Modifications were made to expose the API only as functions (no classes) and to make usage easier in modern TypeScript projects.

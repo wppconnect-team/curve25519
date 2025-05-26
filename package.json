@@ -1,6 +1,6 @@
 {
   "name": "@wppconnect/curve25519",
-  "version": "0.0.12",
+  "version": "1.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/wppconnect-team/curve25519",
