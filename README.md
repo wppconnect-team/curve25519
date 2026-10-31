@@ -1,81 +1,108 @@
+**English** | [Português (Brasil)](./README.pt-BR.md)
+
+<p align="center">
+  <a href="https://wppconnect.io/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://wppconnect-team.github.io/brand/wppconnect-dark.png" />
+      <img src="https://wppconnect-team.github.io/brand/wppconnect-light.png" alt="WPPConnect" width="220" height="121" />
+    </picture>
+  </a>
+</p>
+
 # WPPConnect/Curve25519
 
-[![npm version](https://img.shields.io/npm/v/@wppconnect/curve25519.svg?color=green)](https://www.npmjs.com/package/@wppconnect/curve25519)
-[![Downloads](https://img.shields.io/npm/dm/@wppconnect/curve25519.svg)](https://www.npmjs.com/package/@wppconnect/curve25519)
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/wppconnect-team/curve25519.svg)](https://isitmaintained.com/project/wppconnect/curve25519 'Average time to resolve an issue')
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/wppconnect-team/curve25519.svg)](https://isitmaintained.com/project/wppconnect/curve25519 'Percentage of issues still open')
-[![Build Status](https://img.shields.io/github/actions/workflow/status/wppconnect-team/curve25519/update-proto.yml?branch=main)](https://github.com/wppconnect/curve25519/actions)
-[![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
+Expose Curve25519 operations through a function-based TypeScript API.
 
-> **WPPConnect/Curve25519** This library isolates the implementation of the X25519 curves used in [libsignal-protocol-javascript](https://github.com/signalapp/libsignal-protocol-javascript)
-> and exposes the basic functions in an easy-to-use TypeScript package.
+A WPPConnect Team fork in the WPPConnect ecosystem. Original project credits and license are preserved.
 
-> **This project is a fork of [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).**
-> Modifications were made to expose the API only as functions (no classes) and to make usage easier in modern TypeScript projects.
+[Getting started](#getting-started) | [Documentation](#documentation) | [Contributing](#contributing) | [Support WPPConnect](#support-the-project)
 
-## Installation
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue)](./LICENSE) [![npm version](https://img.shields.io/npm/v/@wppconnect/curve25519)](https://www.npmjs.com/package/@wppconnect/curve25519) [![CI](https://github.com/wppconnect-team/curve25519/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/wppconnect-team/curve25519/actions/workflows/build.yml) [![Open Collective](https://img.shields.io/badge/Open%20Collective-WPPConnect-blue)](https://opencollective.com/wppconnect)
 
-Use [yarn](https://yarnpkg.com/) or npm to install:
+## Overview
+
+For cryptographic integration developers. This WPPConnect Team fork of [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript) exposes named functions instead of the upstream class interface. It supplies curve operations used by the libsignal-protocol fork.
+
+## Features
+
+- `generateKeyPair`, `sharedSecret`, `sign`, `verify` and `signatureIsValid` exports.
+- C implementation compiled to JavaScript with Emscripten.
+
+## Getting started
+
+Use Node.js/npm. Save the local key-agreement example as `index.mjs`, then run `node index.mjs`. It prints `true` without contacting any service.
 
 ```sh
-yarn add @wppconnect/curve25519
-# or
 npm install @wppconnect/curve25519
 ```
 
-## Usage
+```javascript
+import { randomBytes } from "node:crypto";
+import { generateKeyPair, sharedSecret } from "@wppconnect/curve25519";
 
-The API is now function-based. Example usage for Diffie-Hellman:
-
-```typescript
-import { generateKeyPair, sharedSecret, sign, verify, signatureIsValid } from '@wppconnect/curve25519'
-
-const alicePair = generateKeyPair(alice_bytes)
-const bobPair = generateKeyPair(bob_bytes)
-
-const aliceSecret = sharedSecret(bobPair.pubKey, alicePair.privKey)
-const bobSecret = sharedSecret(alicePair.pubKey, bobPair.privKey)
+const alice = generateKeyPair(new Uint8Array(randomBytes(32)));
+const bob = generateKeyPair(new Uint8Array(randomBytes(32)));
+const a = sharedSecret(bob.pubKey, alice.privKey);
+const b = sharedSecret(alice.pubKey, bob.privKey);
+console.log(a.every((value, index) => value === b[index]));
 ```
 
-Signing and verifying:
+## Configuration
 
-```typescript
-// pub, priv, msg are Uint8Array
-import { sign, verify, signatureIsValid } from '@wppconnect/curve25519'
+Inputs are `Uint8Array`. **`verify` returns `true` for an invalid signature**; prefer `signatureIsValid` for conventional validity semantics. See [tests](src/__tests__/) for vectors. Emscripten is required only to rebuild the C sources using [compile.sh](compile.sh).
 
-const sig = sign(priv, msg)
-const verified = verify(pub, msg, sig)
-if (verified) {
-  // Yes, this is correct.  `verify` returns `true` for invalid signatures
-  throw new Error('INVALID SIGNATURE!')
-}
+## Documentation
 
-// To avoid confusion, use:
-const isValid = signatureIsValid(pub, msg, sig)
-if (!isValid) {
-  throw new Error('INVALID SIGNATURE!')
-}
+- [Function implementation](./src/curve-wrapper.ts)
+- [Native sources](./native/)
+- [Retained technical details and acknowledgments](documentation/readme-reference.md)
+
+## WPPConnect ecosystem
+
+| Project | Purpose | When to use it |
+| --- | --- | --- |
+| [@wppconnect/libsignal-protocol](https://github.com/wppconnect-team/libsignal-protocol) | Implement Signal Protocol sessions and key handling in TypeScript. | Implement Signal session/key persistence. |
+
+## Support the project
+
+The WPPConnect contribution below supports maintenance of this fork within the ecosystem; it does not imply funding or endorsement of upstream maintainers.
+
+WPPConnect is maintained by an open-source community. Your support helps fund maintenance, infrastructure, documentation, and the people working on the ecosystem.
+
+If WPPConnect helps your project or business, consider making a one-time contribution or becoming a recurring supporter.
+
+**[Support WPPConnect on Open Collective](https://opencollective.com/wppconnect)**
+
+Contributions are voluntary. See the official page for current financial information. You can also help with code, tests, documentation, translations and well-described issue reports.
+
+## Contributing
+
+Contributions of code, tests, examples, documentation and translations are welcome. For larger changes, discuss the approach in an issue first. Include the project/runtime versions, a minimal reproduction and sanitized logs when reporting a problem. Update both `README.md` and `README.pt-BR.md` in the same change when installation, configuration, features, examples, licensing or funding changes.
+
+After installing the development dependencies, use the repository checks relevant to your change:
+
+```sh
+npm run build
+npm run lint
+npm test
 ```
 
-See the [tests](src/__tests__) for details on how to create input Uint8Arrays and for sample data.
+Account-dependent examples and tests require separate validation with an authorized test account. Never attach credentials or session files to an issue.
 
-## About this fork
+## Community and support
 
-- **Function-based API:** There are no more classes, only named functions for all operations (generateKeyPair, sharedSecret, sign, verify, signatureIsValid).
-- **Compatibility:** Usage is simpler and more direct for modern TypeScript projects.
+Use [repository issues](https://github.com/wppconnect-team/curve25519/issues) for reproducible bugs and feature proposals. For usage questions, join the community through the official channels:
 
-## Build
+- [Discord](https://discord.gg/JU5JGGKGNG)
+- [Telegram](https://t.me/wppconnect)
+- [YouTube](https://www.youtube.com/c/wppconnect)
 
-The main curve implementation is written in C and can be found in the [native/](native/) directory. It is compiled to Javascript with [Emscripten](https://emscripten.org/), as shown in the [compile.sh](compile.sh) script.
-
-If you want to modify the C code or the compilation arguments, you will need to install Emscripten.
-
-## Acknowledgements
-
-This project is based on the work of the folks at [Signal](https://signal.org) and the original repository [privacyresearchgroup/curve25519-typescript](https://github.com/privacyresearchgroup/curve25519-typescript).
+This project is independent and is not affiliated with or endorsed by WhatsApp or Meta. Follow applicable terms and obtain authorization for account and messaging operations.
 
 ## License
 
-Copyright 2020 Privacy Research, LLC
+[GNU General Public License v3.0 only (GPL-3.0-only)](./LICENSE).
 
-Licensed under GPLv3: [http://www.gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.html)
+Copyright 2020 Privacy Research, LLC. Based on work by Signal and Privacy Research.
+
+The original legal document and existing copyright notices are preserved. Third-party components retain their own terms.
