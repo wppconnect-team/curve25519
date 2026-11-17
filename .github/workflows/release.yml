@@ -14,7 +14,8 @@ on:
           - major
 
 permissions:
-  contents: read
+  contents: write
+  actions: write
 
 jobs:
   release:
@@ -23,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PERSONAL_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup GIT
         run: |
@@ -39,4 +40,12 @@ jobs:
         run: npm ci || npm install
 
       - name: Release
-        run: 'npx release-it --increment ${{ github.event.inputs.increment }}'
+        env:
+          INCREMENT: ${{ inputs.increment }}
+        run: npx release-it --ci --increment "$INCREMENT"
+
+      # Tags pushed with GITHUB_TOKEN do not trigger another push workflow.
+      - name: Trigger publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish.yml --ref "v$(node -p "require('./package.json').version")"
